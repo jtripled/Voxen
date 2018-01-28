@@ -6,23 +6,17 @@ import net.minecraft.client.Minecraft;
  *
  * @author jtripled
  */
-public class GUIButtonHidden extends GUIButton
+public abstract class GUIButtonHidden extends GUIButton
 {
-    public GUIButtonHidden(int x, int y)
+    public GUIButtonHidden(GUIContainer gui, int x, int y)
     {
-        this(x, y, 20, 20);
+        this(gui, x, y, 20, 20);
     }
     
-    public GUIButtonHidden(int x, int y, int w, int h)
+    public GUIButtonHidden(GUIContainer gui, int x, int y, int w, int h)
     {
-        super(x, y, w, h, "");
+        super(gui, x, y, w, h, "");
         this.visible = false;
-    }
-    
-    @Override
-    public final GUIButtonHidden setVisible(boolean visible)
-    {
-        return this;
     }
     
     @Override

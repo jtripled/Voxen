@@ -1,11 +1,9 @@
 package com.jtripled.voxen.gui;
 
+import com.jtripled.voxen.Voxen;
 import com.jtripled.voxen.container.ContainerBase;
-import com.jtripled.voxen.gui.GUIButton.GUIButtonAction;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,17 +16,17 @@ import net.minecraft.util.ResourceLocation;
 public abstract class GUIContainer<T extends ContainerBase> extends GuiContainer
 {
     protected final T container;
-    private final Map<GUIButton, GUIButtonAction> buttons;
     private final List<GUIElement> elements;
     private int currentButtonID;
+    private GUIContainer.Type type;
     
     public GUIContainer(T container)
     {
         super(container);
         this.container = container;
-        this.buttons = new HashMap<>();
         this.elements = new ArrayList<>();
         this.currentButtonID = 0;
+        this.type = null;
     }
     
     @Override
@@ -45,9 +43,25 @@ public abstract class GUIContainer<T extends ContainerBase> extends GuiContainer
         int y = (height - ySize) / 2;
         drawDefaultBackground();
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(getTexture());
-        drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        
+        /* Render GUI background. */
+        if (type != null)
+        {
+            mc.getTextureManager().bindTexture(type.getTexture());
+            drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        }
+        else if (getTexture() != null)
+        {
+            mc.getTextureManager().bindTexture(getTexture());
+            drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        }
+        
+        /* Custom rendering per GUI. */
+        if (getTexture() != null)
+            mc.getTextureManager().bindTexture(getTexture());
         drawBackground(ticks, mouseX, mouseY, x, y);
+        
+        /* Draw all elements. */
         elements.forEach((GUIElement element) -> {
             element.drawBackground(ticks, mouseX, mouseY, x, y);
         });
@@ -58,18 +72,25 @@ public abstract class GUIContainer<T extends ContainerBase> extends GuiContainer
     {
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
+        
+        /* Draw titles. */
         fontRenderer.drawString("Inventory", 8, ySize - 93, 0x404040);
         fontRenderer.drawString(getName(), 8, 6, 0x404040);
+        
+        /* Custom rendering per GUI. */
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(getTexture());
+        if (getTexture() != null)
+            mc.getTextureManager().bindTexture(getTexture());
         drawForeground(mouseX, mouseY, x, y);
+        
+        /* Draw all elements. */
         elements.forEach((GUIElement element) -> {
             element.drawForeground(mouseX, mouseY, x, y);
         });
-        buttons.keySet().forEach((GUIButton button) -> {
+        /*buttons.keySet().forEach((GUIButton button) -> {
             if (button.getTooltip() != null && button.isMouseOver())
                 drawHoveringText(button.getTooltip(), mouseX - x, mouseY - y);
-        });
+        });*/
     }
     
     public void addElements(int x, int y)
@@ -87,6 +108,16 @@ public abstract class GUIContainer<T extends ContainerBase> extends GuiContainer
         
     }
     
+    public int getX()
+    {
+        return this.guiLeft;
+    }
+    
+    public int getY()
+    {
+        return this.guiTop;
+    }
+    
     public float getZLevel()
     {
         return zLevel;
@@ -97,37 +128,63 @@ public abstract class GUIContainer<T extends ContainerBase> extends GuiContainer
         return container;
     }
     
-    public abstract ResourceLocation getTexture();
+    public void setType(GUIContainer.Type type)
+    {
+        this.ySize = type.getHeight();
+        this.type = type;
+    }
+    
+    public ResourceLocation getTexture()
+    {
+        return null;
+    }
     
     public abstract String getName();
     
     public void addElement(GUIElement element)
     {
-        elements.add(element);
-    }
-    
-    public void addButton(GUIButton button, GUIButtonAction action)
-    {
-        if (!buttons.containsKey(button))
+        if (element instanceof GUIButton)
         {
+            GUIButton button = (GUIButton) element;
             button.id = currentButtonID++;
             this.addButton(button);
-            buttons.put(button, action);
         }
-        else
-        {
-            
-        }
+        elements.add(element);
     }
     
     @Override
     protected void actionPerformed(GuiButton button)
     {
-        buttons.forEach((GUIButton b, GUIButtonAction a) -> {
-            if (button.id == b.id)
+        elements.forEach((GUIElement element) -> {
+            if (element instanceof GUIButton && button.id == ((GUIButton) element).id)
             {
-                a.run(b);
+                ((GUIButton) element).onClick();
             }
         });
+    }
+    
+    public static enum Type
+    {
+        INVENTORY_1 (132, new ResourceLocation(Voxen.ID, "textures/gui/inventory_1.png")),
+        INVENTORY_2 (150, new ResourceLocation(Voxen.ID, "textures/gui/inventory_2.png"));
+        
+        private final int height;
+        private final ResourceLocation texture;
+        
+        private Type(int height, ResourceLocation texture)
+        {
+            this.height = height;
+            this.texture = texture;
+        }
+        
+        public int getHeight()
+        {
+            return this.height;
+        }
+        
+        public ResourceLocation getTexture()
+        {
+            return this.texture;
+        }
     }
 }

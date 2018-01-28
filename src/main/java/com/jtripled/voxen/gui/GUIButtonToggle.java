@@ -16,31 +16,31 @@ public abstract class GUIButtonToggle extends GUIButton
     
     public String text;
     
-    public GUIButtonToggle(int x, int y)
+    public GUIButtonToggle(GUIContainer gui, int x, int y)
     {
-        this(x, y, 20, 20);
+        this(gui, x, y, 20, 20);
     }
     
-    public GUIButtonToggle(int x, int y, int w, int h)
+    public GUIButtonToggle(GUIContainer gui, int x, int y, int w, int h)
     {
-        this(x, y, w, h, null);
+        this(gui, x, y, w, h, null);
     }
     
-    public GUIButtonToggle(int x, int y, int w, int h, String text)
+    public GUIButtonToggle(GUIContainer gui, int x, int y, int w, int h, String text)
     {
-        super(x, y, w, h, "");
+        super(gui, x, y, w, h, "");
         this.text = text;
     }
     
     public abstract boolean getState();
     
     @Override
-    public final String getTooltip()
+    public final String[] getTooltip()
     {
         return getTooltip(getState());
     }
     
-    public String getTooltip(boolean state)
+    public String[] getTooltip(boolean state)
     {
         return null;
     }

@@ -371,15 +371,18 @@ public class BlockBase extends Block implements IBlockBase
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        if (this instanceof GUIHolder && !world.isRemote)
+        if (this instanceof GUIHolder)
         {
-            ((GUIHolder) this).openGUI(player, world, pos);
+            if (!world.isRemote)
+            {
+                ((GUIHolder) this).openGUI(player, world, pos);
+            }
+            return true;
         }
         else
         {
             return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
         }
-        return true;
     }
     
     @Override

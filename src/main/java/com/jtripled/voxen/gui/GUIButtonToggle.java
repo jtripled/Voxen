@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
  */
 public abstract class GUIButtonToggle extends GUIButton
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Voxen.ID, "textures/gui/buttons.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Voxen.ID, "textures/gui/widgets.png");
     
     public String text;
     

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "voxen",
+  "name": "Voxen",
+  "description": "Shared library for my Minecraft mods.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["jtripled"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

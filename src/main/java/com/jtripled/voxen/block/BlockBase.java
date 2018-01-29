@@ -45,7 +45,8 @@ public class BlockBase extends Block implements IBlockBase
     private BlockRenderLayer layer;
     private int harvestLevel;
     private String harvestTool;
-
+    private boolean uniqueInventoryModel;
+    
     public BlockBase(ModBase mod, String name, Material material)
     {
         this(mod, name, material, material.getMaterialMapColor());
@@ -66,6 +67,7 @@ public class BlockBase extends Block implements IBlockBase
         this.layer = BlockRenderLayer.SOLID;
         this.harvestLevel = 0;
         this.harvestTool = "pickaxe";
+        this.uniqueInventoryModel = false;
     }
     
     @Override
@@ -350,6 +352,21 @@ public class BlockBase extends Block implements IBlockBase
     public final boolean isFullCube(IBlockState state)
     {
         return full;
+    }
+    
+    public final BlockBase setUniqueInventoryModel(boolean unique)
+    {
+        if (!isRegistered())
+        {
+            this.uniqueInventoryModel = unique;
+        }
+        return this;
+    }
+    
+    @Override
+    public final boolean hasUniqueInventoryModel()
+    {
+        return uniqueInventoryModel;
     }
     
     public final BlockBase setRenderLayer(BlockRenderLayer layer)

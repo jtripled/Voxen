@@ -30,7 +30,7 @@ public class ProxyClient extends Proxy
     }
     
     @Override
-    public void registerItemRenderer(IItemBase item)
+    public void registerItemRenderer(IItemBase item, String variant)
     {
         ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(((Item) item).getRegistryName(), "normal"));
     }

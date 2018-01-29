@@ -37,4 +37,6 @@ public interface IBlockBase
     public boolean hasTESR();
     
     public TileEntitySpecialRenderer createTESR();
+    
+    public boolean hasUniqueInventoryModel();
 }

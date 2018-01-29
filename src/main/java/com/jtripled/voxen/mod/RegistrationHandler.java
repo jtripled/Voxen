@@ -218,13 +218,13 @@ public class RegistrationHandler implements IGuiHandler
         
         // Register block renderers (item and/or TESR).
         blocks.forEach((IBlockBase block) -> {
-            if (block.hasItem()) proxy.registerItemRenderer(block.getItem());
+            if (block.hasItem()) proxy.registerItemRenderer(block.getItem(), block.hasUniqueInventoryModel() ? "inventory" : "normal");
             if (block.hasTESR()) proxy.registerTileRenderer(block);
         });
         
         // Register item renderers.
         items.forEach((IItemBase item) -> {
-            proxy.registerItemRenderer(item);
+            proxy.registerItemRenderer(item, "normal");
         });
     }
     

@@ -20,7 +20,7 @@ public class Proxy
         
     }
     
-    public void registerItemRenderer(IItemBase item)
+    public void registerItemRenderer(IItemBase item, String variant)
     {
         
     }

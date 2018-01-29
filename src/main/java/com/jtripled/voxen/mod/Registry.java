@@ -21,4 +21,6 @@ public interface Registry
     public default void onRegisterGUIs(RegistrationHandler handler) {}
     
     public default void onRegisterSounds(RegistrationHandler handler) {}
+    
+    public default void onRegisterRecipes(RegistrationHandler handler) {}
 }

@@ -30,9 +30,12 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import com.jtripled.voxen.entity.IMobRegistration;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 /**
  *
@@ -49,6 +52,7 @@ public class RegistrationHandler implements IGuiHandler
     private final List<IEntityRegistration> entities;
     private int currentGUIID;
     protected final Map<Integer, GUIHolder> guis;
+    RegistryEvent.Register<IRecipe> recipeRegistryEvent;
     
     public RegistrationHandler(ModBase mod)
     {
@@ -222,6 +226,24 @@ public class RegistrationHandler implements IGuiHandler
         items.forEach((IItemBase item) -> {
             proxy.registerItemRenderer(item);
         });
+    }
+    
+    @SubscribeEvent
+    protected final void onRegisterRecipes(RegistryEvent.Register<IRecipe> event)
+    {
+        recipeRegistryEvent = event;
+        registry.onRegisterRecipes(this);
+        recipeRegistryEvent = null;
+    }
+    
+    public final void removeRecipe(String modID, String name)
+    {
+        if (recipeRegistryEvent != null)
+        {
+            ResourceLocation resource = new ResourceLocation(modID, name);
+            IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) recipeRegistryEvent.getRegistry();
+            modRegistry.remove(resource);
+        }
     }
 
     @Override

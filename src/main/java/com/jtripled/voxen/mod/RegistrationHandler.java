@@ -29,6 +29,7 @@ import net.minecraft.entity.EntityList.EntityEggInfo;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import com.jtripled.voxen.entity.IMobRegistration;
+import com.jtripled.voxen.recipe.RecipeBlank;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -241,8 +242,7 @@ public class RegistrationHandler implements IGuiHandler
         if (recipeRegistryEvent != null)
         {
             ResourceLocation resource = new ResourceLocation(modID, name);
-            IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) recipeRegistryEvent.getRegistry();
-            modRegistry.remove(resource);
+            recipeRegistryEvent.getRegistry().register(new RecipeBlank().setRegistryName(resource));
         }
     }
 

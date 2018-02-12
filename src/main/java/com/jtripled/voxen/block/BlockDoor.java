@@ -1,7 +1,7 @@
 package com.jtripled.voxen.block;
 
 import com.jtripled.voxen.item.IItemBase;
-import com.jtripled.voxen.item.ItemBlockBase;
+import com.jtripled.voxen.item.ItemDoor;
 import com.jtripled.voxen.mod.ModBase;
 import java.util.Random;
 import java.util.logging.Level;
@@ -24,8 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBase
 {
-    private ModBase mod;
-    private String name;
+    private final ModBase mod;
+    private final String name;
     private boolean registered;
     private IItemBase item;
     private IProperty[] ignoredProperties;
@@ -102,7 +102,7 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     {
         if (!isRegistered())
         {
-            this.item = new ItemBlockBase(this);
+            this.item = new ItemDoor(this);
         }
         return this;
     }

@@ -1,9 +1,9 @@
 package com.jtripled.voxen.block;
 
 import com.jtripled.voxen.item.IItemBase;
-import com.jtripled.voxen.mod.ModBase;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -12,8 +12,6 @@ import net.minecraft.tileentity.TileEntity;
  */
 public interface IBlockBase
 {
-    public ModBase getMod();
-    
     public String getName();
     
     public boolean isRegistered();
@@ -39,4 +37,8 @@ public interface IBlockBase
     public TileEntitySpecialRenderer createTESR();
     
     public boolean hasUniqueInventoryModel();
+    
+    public IRecipe getRecipe();
+    
+    public boolean hasRecipe();
 }

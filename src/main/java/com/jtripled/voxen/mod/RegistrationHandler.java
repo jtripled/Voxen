@@ -35,6 +35,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 /**
@@ -102,7 +103,7 @@ public class RegistrationHandler implements IGuiHandler
     
     protected final void onPreInit(FMLPreInitializationEvent event)
     {
-        
+        registry.onRegistryInit();
     }
     
     protected final void onInit(FMLInitializationEvent event)
@@ -145,6 +146,8 @@ public class RegistrationHandler implements IGuiHandler
         blocks.forEach((IBlockBase block) -> {
             if (!block.isRegistered())
             {
+                ((Block) block).setUnlocalizedName(block.getName());
+                ((Block) block).setRegistryName(this.mod.getID(), block.getName());
                 block.setRegistered();
                 event.getRegistry().register((Block) block);
                 if (block.hasTile())
@@ -193,13 +196,20 @@ public class RegistrationHandler implements IGuiHandler
         
         // Register item blocks.
         blocks.forEach((IBlockBase block) -> {
-            if (block.hasItem()) event.getRegistry().register((Item) block.getItem());
+            if (block.hasItem())
+            {
+                ((Item) block.getItem()).setUnlocalizedName(block.getName());
+                ((Item) block.getItem()).setRegistryName(this.mod.getID(), block.getName());
+                event.getRegistry().register((Item) block.getItem());
+            }
         });
         
         // Register items.
         items.forEach((IItemBase item) -> {
             if (!item.isRegistered())
             {
+                ((Item) item).setUnlocalizedName(item.getName());
+                ((Item) item).setRegistryName(this.mod.getID(), item.getName());
                 item.setRegistered();
                 event.getRegistry().register((Item) item);
             }
@@ -233,6 +243,12 @@ public class RegistrationHandler implements IGuiHandler
     {
         recipeRegistryEvent = event;
         registry.onRegisterRecipes(this);
+        blocks.forEach((IBlockBase block) -> {
+            if (block.hasRecipe())
+            {
+                
+            }
+        });
         recipeRegistryEvent = null;
     }
     

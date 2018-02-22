@@ -17,32 +17,35 @@ public class ItemDoor extends net.minecraft.item.ItemDoor implements IItemBase
         super(block);
         this.block = block;
         this.registered = false;
-        this.setUnlocalizedName(block.getUnlocalizedName());
-        this.setRegistryName(block.getRegistryName());
     }
 
     @Override
-    public String getUnlocalizedName() {
-        return block.getUnlocalizedName();
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return block.getUnlocalizedName();
-    }
-
-    @Override
-    public String getName() {
+    public String getName()
+    {
         return this.getUnlocalizedName();
     }
 
     @Override
-    public boolean isRegistered() {
+    public boolean isRegistered()
+    {
         return this.registered;
     }
 
     @Override
-    public void setRegistered() {
+    public void setRegistered()
+    {
         this.registered = true;
+    }
+
+    @Override
+    public String getUnlocalizedName()
+    {
+        return block.getUnlocalizedName();
+    }
+
+    @Override
+    public String getUnlocalizedName(ItemStack stack)
+    {
+        return block.getUnlocalizedName();
     }
 }

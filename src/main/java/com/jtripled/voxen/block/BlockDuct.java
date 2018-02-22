@@ -1,11 +1,9 @@
 package com.jtripled.voxen.block;
 
-import com.jtripled.voxen.mod.ModBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -22,29 +20,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public abstract class BlockDuct extends BlockBase
+public abstract class BlockDuct extends BlockConnect
 {
     public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
     public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
-    public static final PropertyBool UP = PropertyBool.create("up");
-    public static final PropertyBool DOWN = PropertyBool.create("down");
     
-    public BlockDuct(ModBase mod, String name, Material material)
+    public BlockDuct(String name, Material material)
     {
-        this(mod, name, material, material.getMaterialMapColor());
+        this(name, material, material.getMaterialMapColor());
     }
     
-    public BlockDuct(ModBase mod, String name, Material material, MapColor mapColor)
+    public BlockDuct(String name, Material material, MapColor mapColor)
     {
-        super(mod, name, material, mapColor);
+        super(name, material, mapColor);
         if (hasFacing())
-            this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false).withProperty(UP, false).withProperty(DOWN, false).withProperty(FACING, EnumFacing.NORTH));
-        else
-            this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false).withProperty(UP, false).withProperty(DOWN, false));
+            this.setDefaultState(this.getDefaultState().withProperty(FACING, EnumFacing.NORTH));
         this.setOpaque(false);
         this.setFullCube(false);
     }
@@ -125,12 +115,12 @@ public abstract class BlockDuct extends BlockBase
         EnumFacing facing = null;
         if (hasFacing())
             facing = ((EnumFacing)state.getValue(FACING));
-        return state.withProperty(NORTH, canConnect(state, world, pos.north(), EnumFacing.SOUTH) && facing != EnumFacing.NORTH)
-             .withProperty(EAST, canConnect(state, world, pos.east(), EnumFacing.WEST) && facing != EnumFacing.EAST)
-             .withProperty(SOUTH, canConnect(state, world, pos.south(), EnumFacing.NORTH) && facing != EnumFacing.SOUTH)
-             .withProperty(WEST, canConnect(state, world, pos.west(), EnumFacing.EAST) && facing != EnumFacing.WEST)
-             .withProperty(UP, canConnect(state, world, pos.up(), EnumFacing.DOWN) && facing != EnumFacing.UP)
-             .withProperty(DOWN, canConnect(state, world, pos.down(), EnumFacing.UP) && facing != EnumFacing.DOWN);
+        return state.withProperty(NORTH, canConnect(state, world, world.getBlockState(pos.north()), EnumFacing.SOUTH))
+             .withProperty(EAST, canConnect(state, world, world.getBlockState(pos.east()), EnumFacing.WEST))
+             .withProperty(SOUTH, canConnect(state, world, world.getBlockState(pos.south()), EnumFacing.NORTH))
+             .withProperty(WEST, canConnect(state, world, world.getBlockState(pos.west()), EnumFacing.EAST))
+             .withProperty(UP, canConnect(state, world, world.getBlockState(pos.up()), EnumFacing.DOWN))
+             .withProperty(DOWN, canConnect(state, world, world.getBlockState(pos.down()), EnumFacing.UP));
     }
 
     @SideOnly(Side.CLIENT)
@@ -140,5 +130,11 @@ public abstract class BlockDuct extends BlockBase
         return true;
     }
     
-    public abstract boolean canConnect(IBlockState state, IBlockAccess world, BlockPos otherPos, EnumFacing otherFacing);
+    public boolean canConnect(IBlockState state, IBlockAccess world, IBlockState otherState, EnumFacing facing)
+    {
+        return canConnect(state, world, otherState) && (!hasFacing() || ((EnumFacing)state.getValue(FACING)) != facing);
+    }
+
+    @Override
+    public abstract boolean canConnect(IBlockState state, IBlockAccess world, IBlockState otherState);
 }

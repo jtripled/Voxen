@@ -1,30 +1,20 @@
 package com.jtripled.voxen.block;
 
-import com.jtripled.voxen.gui.GUIHolder;
 import com.jtripled.voxen.item.IItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.minecraft.block.Block;
-import static net.minecraft.block.Block.FULL_BLOCK_AABB;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,9 +23,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class BlockBase extends Block implements IBlockBase
+public class BlockTorch extends net.minecraft.block.BlockTorch implements IBlockBase
 {
-    private String name;
+    private final String name;
     private boolean registered;
     private IItemBase item;
     private IProperty[] ignoredProperties;
@@ -50,16 +40,10 @@ public class BlockBase extends Block implements IBlockBase
     private String harvestTool;
     private boolean uniqueInventoryModel;
     private IRecipe recipe;
-    private AxisAlignedBB box;
-    
-    public BlockBase(String name, Material material)
-    {
-        this(name, material, material.getMaterialMapColor());
-    }
 
-    public BlockBase(String name, Material material, MapColor mapColor)
+    public BlockTorch(String name, Material material)
     {
-        super(material, mapColor);
+        super();
         this.registered = false;
         this.name = name;
         this.harvestable = true;
@@ -70,7 +54,6 @@ public class BlockBase extends Block implements IBlockBase
         this.harvestLevel = 0;
         this.harvestTool = "pickaxe";
         this.uniqueInventoryModel = false;
-        this.box = FULL_BLOCK_AABB;
     }
     
     @Override
@@ -107,7 +90,7 @@ public class BlockBase extends Block implements IBlockBase
         return getItem() != null;
     }
     
-    public final BlockBase setItem()
+    public final BlockTorch setItem()
     {
         if (!isRegistered())
         {
@@ -116,7 +99,7 @@ public class BlockBase extends Block implements IBlockBase
         return this;
     }
     
-    public final BlockBase setItem(IItemBase item)
+    public final BlockTorch setItem(IItemBase item)
     {
         if (!isRegistered())
         {
@@ -129,7 +112,7 @@ public class BlockBase extends Block implements IBlockBase
      * Creative tab methods.
      */
     
-    public final BlockBase setTab(CreativeTabs tab)
+    public final BlockTorch setTab(CreativeTabs tab)
     {
         if (!isRegistered())
         {
@@ -145,16 +128,16 @@ public class BlockBase extends Block implements IBlockBase
     @Override
     public final IProperty[] getIgnoredProperties()
     {
-        return ignoredProperties;
+        return null;
     }
     
     @Override
     public final boolean hasIgnoredProperties()
     {
-        return getIgnoredProperties() != null;
+        return this.ignoredProperties != null;
     }
     
-    public final BlockBase setIgnoredProperties(IProperty[] ignoredProperties)
+    public final BlockTorch setIgnoredProperties(IProperty[] ignoredProperties)
     {
         if (!isRegistered())
         {
@@ -196,7 +179,7 @@ public class BlockBase extends Block implements IBlockBase
         return null;
     }
     
-    public final BlockBase setTESRClass(Class<? extends TileEntitySpecialRenderer> tileRenderer)
+    public final BlockTorch setTESRClass(Class<? extends TileEntitySpecialRenderer> tileRenderer)
     {
         if (!isRegistered())
         {
@@ -250,7 +233,7 @@ public class BlockBase extends Block implements IBlockBase
         return null;
     }
     
-    public final BlockBase setTileClass(Class<? extends TileEntity> tileClass)
+    public final BlockTorch setTileClass(Class<? extends TileEntity> tileClass)
     {
         if (!isRegistered())
         {
@@ -267,7 +250,7 @@ public class BlockBase extends Block implements IBlockBase
         return null;
     }
     
-    public final BlockBase setHarvestable(boolean harvestable)
+    public final BlockTorch setHarvestable(boolean harvestable)
     {
         if (!isRegistered())
         {
@@ -276,7 +259,7 @@ public class BlockBase extends Block implements IBlockBase
         return this;
     }
     
-    public final BlockBase setSilkHarvestable(boolean harvestable)
+    public final BlockTorch setSilkHarvestable(boolean harvestable)
     {
         if (!isRegistered())
         {
@@ -291,7 +274,7 @@ public class BlockBase extends Block implements IBlockBase
         return harvestable || silkHarvest;
     }
     
-    public final BlockBase setHarvestLevel(int level)
+    public final BlockTorch setHarvestLevel(int level)
     {
         if (!isRegistered())
         {
@@ -306,7 +289,7 @@ public class BlockBase extends Block implements IBlockBase
         return harvestLevel;
     }
     
-    public final BlockBase setHarvestTool(String tool)
+    public final BlockTorch setHarvestTool(String tool)
     {
         if (!isRegistered())
         {
@@ -321,7 +304,7 @@ public class BlockBase extends Block implements IBlockBase
         return harvestTool;
     }
     
-    public final BlockBase setOpaque(boolean opaque)
+    public final BlockTorch setOpaque(boolean opaque)
     {
         if (!isRegistered())
         {
@@ -336,7 +319,7 @@ public class BlockBase extends Block implements IBlockBase
         return opaque;
     }
     
-    public final BlockBase setFullCube(boolean full)
+    public final BlockTorch setFullCube(boolean full)
     {
         if (!isRegistered())
         {
@@ -348,10 +331,10 @@ public class BlockBase extends Block implements IBlockBase
     @Override
     public final boolean isFullCube(IBlockState state)
     {
-        return this.full;
+        return full;
     }
     
-    public final BlockBase setRecipe(boolean shaped, ItemStack output, Object... input)
+    public final BlockTorch setRecipe(boolean shaped, ItemStack output, Object... input)
     {
         if (!isRegistered())
         {
@@ -372,32 +355,7 @@ public class BlockBase extends Block implements IBlockBase
         return this.recipe != null;
     }
     
-    public final BlockBase setBoundingBox(double x1, double y1, double z1, double x2, double y2, double z2)
-    {
-        if (!isRegistered())
-        {
-            this.box = new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
-        }
-        return this;
-    }
-    
-    public final BlockBase setBoundingBox(AxisAlignedBB bb)
-    {
-        if (!isRegistered())
-        {
-            this.box = bb;
-        }
-        return this;
-    }
-
-    @Deprecated
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
-        return this.box;
-    }
-    
-    public final BlockBase setUniqueInventoryModel(boolean unique)
+    public final BlockTorch setUniqueInventoryModel(boolean unique)
     {
         if (!isRegistered())
         {
@@ -412,7 +370,7 @@ public class BlockBase extends Block implements IBlockBase
         return uniqueInventoryModel;
     }
     
-    public final BlockBase setRenderLayer(BlockRenderLayer layer)
+    public final BlockTorch setRenderLayer(BlockRenderLayer layer)
     {
         if (!isRegistered())
         {
@@ -426,37 +384,5 @@ public class BlockBase extends Block implements IBlockBase
     public BlockRenderLayer getBlockLayer()
     {
         return layer;
-    }
-    
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
-        if (this instanceof GUIHolder)
-        {
-            if (!world.isRemote)
-            {
-                ((GUIHolder) this).openGUI(player, world, pos);
-            }
-            return true;
-        }
-        else
-        {
-            return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
-        }
-    }
-    
-    @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
-    {
-        if (this instanceof IBlockStorage && !world.isRemote)
-        {
-            IBlockStorage storage = (IBlockStorage) this;
-            if (storage.canDropStorage(world, pos, state))
-            {
-                IBlockStorage.dropStorage(storage.getStorage(world, pos, state), world, pos.getX(), pos.getY(), pos.getZ());
-                world.updateComparatorOutputLevel(pos, this);
-            }
-        }
-        super.breakBlock(world, pos, state);
     }
 }

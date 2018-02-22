@@ -11,7 +11,7 @@ public class ItemBase extends Item implements IItemBase
     private String name;
     private boolean registered;
     
-    public ItemBase()
+    public ItemBase(String name)
     {
         this.registered = false;
     }
@@ -20,17 +20,6 @@ public class ItemBase extends Item implements IItemBase
     public final String getName()
     {
         return name;
-    }
-    
-    public final ItemBase setName(String modID, String name)
-    {
-        if (!isRegistered())
-        {
-            this.name = name;
-            this.setUnlocalizedName(name);
-            this.setRegistryName(modID, name);
-        }
-        return this;
     }
     
     @Override

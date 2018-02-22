@@ -1,6 +1,5 @@
 package com.jtripled.voxen.gui;
 
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.mod.ModBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -16,14 +15,7 @@ public interface GUIHolder
     
     public Object getClientGUI(EntityPlayer player, World world, BlockPos pos);
     
-    public default ModBase getGUIOwner()
-    {
-        if (this instanceof BlockBase)
-        {
-            return ((BlockBase) this).getMod();
-        }
-        return null;
-    }
+    public ModBase getGUIOwner();
     
     public default int getGUIID()
     {

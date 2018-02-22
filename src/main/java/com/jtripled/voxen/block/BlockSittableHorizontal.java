@@ -14,11 +14,11 @@ import net.minecraft.world.World;
  *
  * @author jtripled
  */
-public class BlockHorizontal extends BlockBase
+public abstract class BlockSittableHorizontal extends BlockSittable
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
     
-    public BlockHorizontal(String name, Material material)
+    public BlockSittableHorizontal(String name, Material material)
     {
         super(name, material);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));

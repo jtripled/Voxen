@@ -2,7 +2,6 @@ package com.jtripled.voxen.block;
 
 import com.jtripled.voxen.item.IItemBase;
 import com.jtripled.voxen.item.ItemDoor;
-import com.jtripled.voxen.mod.ModBase;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +11,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.World;
@@ -24,7 +25,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBase
 {
-    private final ModBase mod;
     private final String name;
     private boolean registered;
     private IItemBase item;
@@ -39,15 +39,13 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     private int harvestLevel;
     private String harvestTool;
     private boolean uniqueInventoryModel;
+    private IRecipe recipe;
 
-    public BlockDoor(ModBase mod, String name, Material material)
+    public BlockDoor(String name, Material material)
     {
         super(material);
         this.registered = false;
-        this.mod = mod;
         this.name = name;
-        this.setUnlocalizedName(name);
-        this.setRegistryName(mod.getID(), name);
         this.harvestable = true;
         this.silkHarvest = false;
         this.opaque = true;
@@ -68,12 +66,6 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     public final void setRegistered()
     {
         this.registered = true;
-    }
-
-    @Override
-    public final ModBase getMod()
-    {
-        return mod;
     }
     
     @Override
@@ -136,13 +128,13 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     @Override
     public final IProperty[] getIgnoredProperties()
     {
-        return ignoredProperties;
+        return new IProperty[]{ POWERED };
     }
     
     @Override
     public final boolean hasIgnoredProperties()
     {
-        return getIgnoredProperties() != null;
+        return true;
     }
     
     public final BlockDoor setIgnoredProperties(IProperty[] ignoredProperties)
@@ -340,6 +332,27 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     public final boolean isFullCube(IBlockState state)
     {
         return full;
+    }
+    
+    public final BlockDoor setRecipe(boolean shaped, ItemStack output, Object... input)
+    {
+        if (!isRegistered())
+        {
+            
+        }
+        return this;
+    }
+    
+    @Override
+    public final IRecipe getRecipe()
+    {
+        return this.recipe;
+    }
+    
+    @Override
+    public final boolean hasRecipe()
+    {
+        return this.recipe != null;
     }
     
     public final BlockDoor setUniqueInventoryModel(boolean unique)

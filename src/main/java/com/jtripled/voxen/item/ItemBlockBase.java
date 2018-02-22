@@ -18,8 +18,6 @@ public class ItemBlockBase extends ItemBlock implements IItemBase
         super((Block) block);
         this.name = block.getName();
         this.registered = false;
-        this.setUnlocalizedName(((Block) block).getUnlocalizedName());
-        this.setRegistryName(((Block) block).getRegistryName());
     }
     
     @Override

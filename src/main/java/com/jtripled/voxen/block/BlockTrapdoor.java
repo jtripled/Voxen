@@ -12,11 +12,15 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 /**
  *
@@ -24,7 +28,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements IBlockBase
 {
-    private ModBase mod;
     private String name;
     private boolean registered;
     private IItemBase item;
@@ -39,15 +42,13 @@ public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements 
     private int harvestLevel;
     private String harvestTool;
     private boolean uniqueInventoryModel;
+    private IRecipe recipe;
 
-    public BlockTrapdoor(ModBase mod, String name, Material material)
+    public BlockTrapdoor(String name, Material material)
     {
         super(material);
         this.registered = false;
-        this.mod = mod;
         this.name = name;
-        this.setUnlocalizedName(name);
-        this.setRegistryName(mod.getID(), name);
         this.harvestable = true;
         this.silkHarvest = false;
         this.opaque = true;
@@ -68,12 +69,6 @@ public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements 
     public final void setRegistered()
     {
         this.registered = true;
-    }
-
-    @Override
-    public final ModBase getMod()
-    {
-        return mod;
     }
     
     @Override
@@ -340,6 +335,27 @@ public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements 
     public final boolean isFullCube(IBlockState state)
     {
         return full;
+    }
+    
+    public final BlockTrapdoor setRecipe(boolean shaped, ItemStack output, Object... input)
+    {
+        if (!isRegistered())
+        {
+            
+        }
+        return this;
+    }
+    
+    @Override
+    public final IRecipe getRecipe()
+    {
+        return this.recipe;
+    }
+    
+    @Override
+    public final boolean hasRecipe()
+    {
+        return this.recipe != null;
     }
     
     public final BlockTrapdoor setUniqueInventoryModel(boolean unique)

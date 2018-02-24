@@ -1,6 +1,5 @@
 package com.jtripled.voxen.block;
 
-import com.jtripled.voxen.mod.ModBase;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -8,10 +7,7 @@ import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockShulkerBox;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -29,12 +25,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public abstract class BlockPane extends BlockBase
+public abstract class BlockPane extends BlockBase implements IBlockConnectable.Horizontal
 {
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
     protected static final AxisAlignedBB[] AABB_BY_INDEX = new AxisAlignedBB[] {new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D), new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 0.5625D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.4375D, 0.5625D, 1.0D, 0.5625D), new AxisAlignedBB(0.0D, 0.0D, 0.4375D, 0.5625D, 1.0D, 1.0D), new AxisAlignedBB(0.4375D, 0.0D, 0.0D, 0.5625D, 1.0D, 0.5625D), new AxisAlignedBB(0.4375D, 0.0D, 0.0D, 0.5625D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5625D, 1.0D, 0.5625D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5625D, 1.0D, 1.0D), new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 1.0D, 1.0D, 0.5625D), new AxisAlignedBB(0.4375D, 0.0D, 0.4375D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.4375D, 1.0D, 1.0D, 0.5625D), new AxisAlignedBB(0.0D, 0.0D, 0.4375D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.4375D, 0.0D, 0.0D, 1.0D, 1.0D, 0.5625D), new AxisAlignedBB(0.4375D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.5625D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
     
     public BlockPane(String name, Material material)
@@ -45,7 +37,6 @@ public abstract class BlockPane extends BlockBase
     public BlockPane(String name, Material material, MapColor color)
     {
         super(name, material, color);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false));
         this.setOpaque(false);
         this.setFullCube(false);
     }
@@ -119,24 +110,12 @@ public abstract class BlockPane extends BlockBase
 
         return i;
     }
-    
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
-    {
-        return state.withProperty(NORTH, this.canConnect(state, world, pos.north(), EnumFacing.SOUTH)).withProperty(SOUTH, this.canConnect(state, world, pos.south(), EnumFacing.NORTH)).withProperty(WEST, this.canConnect(state, world, pos.west(), EnumFacing.EAST)).withProperty(EAST, this.canConnect(state, world, pos.east(), EnumFacing.WEST));
-    }
 
     @SideOnly(Side.CLIENT)
     @Override
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
         return blockAccess.getBlockState(pos.offset(side)).getBlock() == this ? false : super.shouldSideBeRendered(blockState, blockAccess, pos, side);
-    }
-    
-    @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        return 0;
     }
     
     @Override
@@ -167,12 +146,6 @@ public abstract class BlockPane extends BlockBase
             default:
                 return super.withMirror(state, mirrorIn);
         }
-    }
-    
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {NORTH, EAST, WEST, SOUTH});
     }
     
     @Override

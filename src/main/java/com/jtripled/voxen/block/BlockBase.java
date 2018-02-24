@@ -1,8 +1,11 @@
 package com.jtripled.voxen.block;
 
+import com.google.common.collect.Lists;
 import com.jtripled.voxen.gui.GUIHolder;
 import com.jtripled.voxen.item.IItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,9 +14,11 @@ import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -71,6 +76,12 @@ public class BlockBase extends Block implements IBlockBase
         this.harvestTool = "pickaxe";
         this.uniqueInventoryModel = false;
         this.box = FULL_BLOCK_AABB;
+        
+        if (this instanceof IBlockFaceable)
+            this.setDefaultState(((IBlockFaceable) this).addFaceableDefaultStates(this.getDefaultState()));
+        
+        if (this instanceof IBlockConnectable)
+            this.setDefaultState(((IBlockConnectable) this).addConnectableDefaultStates(this.getDefaultState()));
     }
     
     @Override
@@ -291,7 +302,7 @@ public class BlockBase extends Block implements IBlockBase
         return harvestable || silkHarvest;
     }
     
-    public final BlockBase setHarvestLevel(int level)
+    public final BlockBase setHarvestLevel(int harvestLevel)
     {
         if (!isRegistered())
         {
@@ -306,7 +317,7 @@ public class BlockBase extends Block implements IBlockBase
         return harvestLevel;
     }
     
-    public final BlockBase setHarvestTool(String tool)
+    public final BlockBase setHarvestTool(String harvestTool)
     {
         if (!isRegistered())
         {
@@ -439,6 +450,15 @@ public class BlockBase extends Block implements IBlockBase
             }
             return true;
         }
+        else if ((IBlockBase) this instanceof IBlockSittable &&
+                IBlockSittable.sitOnBlock(world, pos.getX(), pos.getY(), pos.getZ(), player, ((IBlockSittable) this).getSeatHeight(state, world, pos)))
+        {
+            if (!world.isRemote)
+            {
+                world.updateComparatorOutputLevel(pos, this);
+            }
+            return true;
+        }
         else
         {
             return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
@@ -458,5 +478,76 @@ public class BlockBase extends Block implements IBlockBase
             }
         }
         super.breakBlock(world, pos, state);
+    }
+    
+    @Override
+    public boolean hasComparatorInputOverride(IBlockState state)
+    {
+        if ((IBlockBase) state.getBlock() instanceof IBlockSittable)
+        {
+            return true;
+        }
+        return super.hasComparatorInputOverride(state);
+    }
+    
+    @Override
+    public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos)
+    {
+        if ((IBlockBase) state.getBlock() instanceof IBlockSittable)
+        {
+            return IBlockSittable.isSomeoneSitting(world, pos.getX(), pos.getY(), pos.getZ()) ? 1 : 0;
+        }
+        return super.getComparatorInputOverride(state, world, pos);
+    }
+    
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    {
+        IBlockState state = this.getDefaultState();
+        if (this instanceof IBlockFaceable)
+            state = ((IBlockFaceable) this).getFaceableStateForPlacement(state, world, pos, facing, hitX, hitY, hitZ, meta, placer);
+        return state;
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        List<IProperty> properties = new ArrayList<>();
+        
+        if (this instanceof IBlockFaceable)
+            properties.add(((IBlockFaceable) this).getFaceableProperty());
+        
+        if (this instanceof IBlockConnectable)
+            properties.addAll(Lists.newArrayList(((IBlockConnectable) this).getConnectableProperties()));
+        
+        if (!properties.isEmpty())
+            return new BlockStateContainer(this, properties.toArray(new IProperty[properties.size()]));
+        
+        return super.createBlockState();
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta)
+    {
+        IBlockState state = this.getDefaultState();
+        if (this instanceof IBlockFaceable)
+            return ((IBlockFaceable) this).getFaceableStateFromMeta(state, meta);
+        return state;
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        if (this instanceof IBlockFaceable)
+            return ((IBlockFaceable) this).getFaceableMetaFromState(state);
+        return 0;
+    }
+    
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
+    {
+        if (this instanceof IBlockConnectable)
+            state = ((IBlockConnectable) this).getConnectableActualState(state, world, pos);
+        return state;
     }
 }

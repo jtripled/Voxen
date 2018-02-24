@@ -1,70 +1,22 @@
 package com.jtripled.voxen.block;
 
 import java.util.List;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
  *
  * @author jtripled
  */
-public class BlockSittable extends BlockBase
+public interface IBlockSittable extends IBlockBase
 {
-    private double height = 0.5d;
-    
-    public BlockSittable(String name, Material material)
-    {
-        super(name, material);
-    }
-    
-    public BlockSittable(String name, Material material, MapColor color)
-    {
-        super(name, material, color);
-    }
-    
-    public final BlockSittable setSeatHeight(double height)
-    {
-        if (!this.isRegistered())
-            this.height = height;
-        return this;
-    }
-    
-    public final double getSeatHeight()
-    {
-        return this.height;
-    }
-    
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        if (sitOnBlock(world, pos.getX(), pos.getY(), pos.getZ(), player, getSeatHeight()))
-        {
-            world.updateComparatorOutputLevel(pos, this);
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public boolean hasComparatorInputOverride(IBlockState state)
-    {
-        return true;
-    }
-    
-    @Override
-    public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos)
-    {
-        return isSomeoneSitting(world, pos.getX(), pos.getY(), pos.getZ()) ? 1 : 0;
-    }
+    public double getSeatHeight(IBlockState state, IBlockAccess access, BlockPos pos);
     
     public static boolean sitOnBlock(World world, double x, double y, double z, EntityPlayer player, double height)
     {

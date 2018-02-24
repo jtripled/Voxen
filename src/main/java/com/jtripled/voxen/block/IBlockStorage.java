@@ -14,7 +14,7 @@ import net.minecraftforge.items.IItemHandler;
  *
  * @author jtripled
  */
-public interface IBlockStorage
+public interface IBlockStorage extends IBlockBase
 {
     public default IItemHandler getStorage(World world, BlockPos pos, IBlockState state)
     {

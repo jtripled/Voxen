@@ -4,8 +4,13 @@ import com.google.common.collect.Lists;
 import com.jtripled.voxen.gui.GUIHolder;
 import com.jtripled.voxen.item.IItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
+import com.jtripled.voxen.mod.ModBase;
+import com.jtripled.voxen.tile.ITileNameable;
+import com.jtripled.voxen.util.Tab;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +22,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -40,6 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class BlockBase extends Block implements IBlockBase
 {
+    private ModBase owner;
     private String name;
     private boolean registered;
     private IItemBase item;
@@ -56,6 +62,10 @@ public class BlockBase extends Block implements IBlockBase
     private boolean uniqueInventoryModel;
     private IRecipe recipe;
     private AxisAlignedBB box;
+    private Map<AxisAlignedBB, BlockPredicate> collisionBoxes;
+    private boolean topSolid;
+    private boolean renderSides;
+    private ModBase guiOwner;
     
     public BlockBase(String name, Material material)
     {
@@ -65,6 +75,7 @@ public class BlockBase extends Block implements IBlockBase
     public BlockBase(String name, Material material, MapColor mapColor)
     {
         super(material, mapColor);
+        this.owner = null;
         this.registered = false;
         this.name = name;
         this.harvestable = true;
@@ -72,10 +83,19 @@ public class BlockBase extends Block implements IBlockBase
         this.opaque = true;
         this.full = true;
         this.layer = BlockRenderLayer.SOLID;
+        this.renderSides = false;
+        this.topSolid = true;
         this.harvestLevel = 0;
         this.harvestTool = "pickaxe";
         this.uniqueInventoryModel = false;
         this.box = FULL_BLOCK_AABB;
+        this.collisionBoxes = new HashMap<>();
+        
+        if (this instanceof IBlockEnableable)
+        {
+            this.setIgnoredProperties(new IProperty[] {IBlockEnableable.ENABLED});
+            this.setDefaultState(((IBlockEnableable) this).addEnableableDefaultStates(this.getDefaultState()));
+        }
         
         if (this instanceof IBlockFaceable)
             this.setDefaultState(((IBlockFaceable) this).addFaceableDefaultStates(this.getDefaultState()));
@@ -91,9 +111,16 @@ public class BlockBase extends Block implements IBlockBase
     }
 
     @Override
-    public final void setRegistered()
+    public final void setRegistered(ModBase owner)
     {
         this.registered = true;
+        this.owner = owner;
+    }
+    
+    @Override
+    public final ModBase getOwner()
+    {
+        return owner;
     }
     
     @Override
@@ -140,11 +167,11 @@ public class BlockBase extends Block implements IBlockBase
      * Creative tab methods.
      */
     
-    public final BlockBase setTab(CreativeTabs tab)
+    public final BlockBase setTab(Tab tab)
     {
         if (!isRegistered())
         {
-            this.setCreativeTab(tab);
+            this.setCreativeTab(tab.getCreativeTab());
         }
         return this;
     }
@@ -239,7 +266,7 @@ public class BlockBase extends Block implements IBlockBase
     }
     
     @Override
-    public final boolean hasTileEntity(IBlockState state)
+    public boolean hasTileEntity(IBlockState state)
     {
         return getTileClass() != null;
     }
@@ -332,6 +359,29 @@ public class BlockBase extends Block implements IBlockBase
         return harvestTool;
     }
     
+    public final void setTopSolid(boolean topSolid)
+    {
+        this.topSolid = topSolid;
+    }
+
+    @Override
+    public boolean isTopSolid(IBlockState state)
+    {
+        return topSolid;
+    }
+
+    public final void setRenderSides(boolean renderSides)
+    {
+        this.renderSides = renderSides;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+    {
+        return renderSides;
+    }
+    
     public final BlockBase setOpaque(boolean opaque)
     {
         if (!isRegistered())
@@ -383,6 +433,38 @@ public class BlockBase extends Block implements IBlockBase
         return this.recipe != null;
     }
     
+    public final void addCollisionBox(double x1, double y1, double z1, double x2, double y2, double z2)
+    {
+        this.collisionBoxes.put(new AxisAlignedBB(x1, y1, z1, x2, y2, z2), new BlockPredicateTrue());
+    }
+    
+    public final void addCollisionBox(AxisAlignedBB bb)
+    {
+        this.collisionBoxes.put(bb, new BlockPredicateTrue());
+    }
+    
+    public final void addCollisionBox(double x1, double y1, double z1, double x2, double y2, double z2, BlockPredicate predicate)
+    {
+        this.collisionBoxes.put(new AxisAlignedBB(x1, y1, z1, x2, y2, z2), predicate);
+    }
+    
+    public final void addCollisionBox(AxisAlignedBB bb, BlockPredicate predicate)
+    {
+        this.collisionBoxes.put(bb, predicate);
+    }
+    
+    @Override
+    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_) 
+    {
+        this.collisionBoxes.forEach((AxisAlignedBB bb, BlockPredicate predicate) -> {
+            if (predicate.test(state, world, pos))
+            {
+                Block.addCollisionBoxToList(pos, entityBox, collidingBoxes, bb);
+            }
+        });
+        super.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entityIn, enableStats);
+    }
+    
     public final BlockBase setBoundingBox(double x1, double y1, double z1, double x2, double y2, double z2)
     {
         if (!isRegistered())
@@ -403,7 +485,7 @@ public class BlockBase extends Block implements IBlockBase
 
     @Deprecated
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         return this.box;
     }
@@ -473,11 +555,35 @@ public class BlockBase extends Block implements IBlockBase
             IBlockStorage storage = (IBlockStorage) this;
             if (storage.canDropStorage(world, pos, state))
             {
-                IBlockStorage.dropStorage(storage.getStorage(world, pos, state), world, pos.getX(), pos.getY(), pos.getZ());
+                IBlockStorage.dropStorage(storage.getStorage(state, world, pos), world, pos.getX(), pos.getY(), pos.getZ());
                 world.updateComparatorOutputLevel(pos, this);
             }
         }
         super.breakBlock(world, pos, state);
+    }
+
+    @Override
+    public void onBlockAdded(World world, BlockPos pos, IBlockState state)
+    {
+        if (this instanceof IBlockEnableable)
+            this.updateState(world, pos, state);
+    }
+    
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+    {
+        if (this instanceof IBlockEnableable)
+            this.updateState(worldIn, pos, state);
+    }
+
+    private void updateState(World worldIn, BlockPos pos, IBlockState state)
+    {
+        if (this instanceof IBlockEnableable)
+        {
+            boolean flag = !worldIn.isBlockPowered(pos);
+            if (flag != ((boolean)state.getValue(IBlockEnableable.ENABLED)))
+                worldIn.setBlockState(pos, state.withProperty(IBlockEnableable.ENABLED, flag), 4);
+        }
     }
     
     @Override
@@ -517,6 +623,9 @@ public class BlockBase extends Block implements IBlockBase
         if (this instanceof IBlockFaceable)
             properties.add(((IBlockFaceable) this).getFaceableProperty());
         
+        if (this instanceof IBlockEnableable)
+            properties.add(((IBlockEnableable) this).getEnableableProperty());
+        
         if (this instanceof IBlockConnectable)
             properties.addAll(Lists.newArrayList(((IBlockConnectable) this).getConnectableProperties()));
         
@@ -530,17 +639,22 @@ public class BlockBase extends Block implements IBlockBase
     public IBlockState getStateFromMeta(int meta)
     {
         IBlockState state = this.getDefaultState();
+        if (this instanceof IBlockEnableable)
+            state = ((IBlockEnableable) this).getEnableableStateFromMeta(state, meta);
         if (this instanceof IBlockFaceable)
-            return ((IBlockFaceable) this).getFaceableStateFromMeta(state, meta);
+            state = ((IBlockFaceable) this).getFaceableStateFromMeta(state, meta);
         return state;
     }
 
     @Override
     public int getMetaFromState(IBlockState state)
     {
+        int meta = 0;
+        if (this instanceof IBlockEnableable)
+            meta |= ((IBlockEnableable) this).getEnableableMetaFromState(state);
         if (this instanceof IBlockFaceable)
-            return ((IBlockFaceable) this).getFaceableMetaFromState(state);
-        return 0;
+            meta |= ((IBlockFaceable) this).getFaceableMetaFromState(state);
+        return meta;
     }
     
     @Override
@@ -549,5 +663,37 @@ public class BlockBase extends Block implements IBlockBase
         if (this instanceof IBlockConnectable)
             state = ((IBlockConnectable) this).getConnectableActualState(state, world, pos);
         return state;
+    }
+    
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
+    {
+        super.onBlockPlacedBy(world, pos, state, placer, stack);
+        
+        if (this.hasTileEntity() && stack.hasDisplayName())
+        {
+            TileEntity tile = world.getTileEntity(pos);
+
+            if (tile instanceof ITileNameable)
+            {
+                ((ITileNameable) tile).setCustomName(stack.getDisplayName());
+            }
+        }
+    }
+    
+    public ModBase getGUIOwner()
+    {
+        return getOwner();
+    }
+    
+    public static interface BlockPredicate
+    {
+        public boolean test(IBlockState state, IBlockAccess world, BlockPos pos);
+    }
+    
+    public static class BlockPredicateTrue implements BlockPredicate
+    {
+        @Override
+        public boolean test(IBlockState state, IBlockAccess world, BlockPos pos) { return true; }
     }
 }

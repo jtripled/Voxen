@@ -2,6 +2,7 @@ package com.jtripled.voxen.mod;
 
 import com.google.common.collect.Lists;
 import com.jtripled.voxen.Voxen;
+import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.block.IBlockBase;
 import com.jtripled.voxen.gui.GUIHolder;
 import com.jtripled.voxen.item.IItemBase;
@@ -35,7 +36,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 /**
@@ -147,8 +147,8 @@ public class RegistrationHandler implements IGuiHandler
             if (!block.isRegistered())
             {
                 ((Block) block).setUnlocalizedName(block.getName());
-                ((Block) block).setRegistryName(this.mod.getID(), block.getName());
-                block.setRegistered();
+                ((Block) block).setRegistryName(mod.getID(), block.getName());
+                block.setRegistered(mod);
                 event.getRegistry().register((Block) block);
                 if (block.hasTile())
                     GameRegistry.registerTileEntity(block.getTileClass(), ((Block) block).getRegistryName().toString());

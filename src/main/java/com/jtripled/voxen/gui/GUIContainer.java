@@ -165,8 +165,10 @@ public abstract class GUIContainer<T extends ContainerBase> extends GuiContainer
     
     public static enum Type
     {
-        INVENTORY_1 (132, new ResourceLocation(Voxen.ID, "textures/gui/inventory_1.png")),
-        INVENTORY_2 (150, new ResourceLocation(Voxen.ID, "textures/gui/inventory_2.png"));
+        INVENTORY_1   (132, new ResourceLocation(Voxen.ID, "textures/gui/inventory_1.png")),
+        INVENTORY_1_5 (141, new ResourceLocation(Voxen.ID, "textures/gui/inventory_1_5.png")),
+        INVENTORY_2   (150, new ResourceLocation(Voxen.ID, "textures/gui/inventory_2.png")),
+        INVENTORY_2_5 (159, new ResourceLocation(Voxen.ID, "textures/gui/inventory_2_5.png"));
         
         private final int height;
         private final ResourceLocation texture;

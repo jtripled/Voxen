@@ -28,6 +28,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
  */
 public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements IBlockBase
 {
+    private ModBase owner;
     private String name;
     private boolean registered;
     private IItemBase item;
@@ -47,6 +48,7 @@ public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements 
     public BlockTrapdoor(String name, Material material)
     {
         super(material);
+        this.owner = null;
         this.registered = false;
         this.name = name;
         this.harvestable = true;
@@ -66,15 +68,22 @@ public class BlockTrapdoor extends net.minecraft.block.BlockTrapDoor implements 
     }
 
     @Override
-    public final void setRegistered()
+    public final void setRegistered(ModBase owner)
     {
         this.registered = true;
+        this.owner = owner;
     }
     
     @Override
     public final String getName()
     {
         return name;
+    }
+    
+    @Override
+    public final ModBase getOwner()
+    {
+        return owner;
     }
     
     /*

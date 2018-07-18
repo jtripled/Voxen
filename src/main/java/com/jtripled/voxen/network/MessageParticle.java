@@ -2,7 +2,6 @@ package com.jtripled.voxen.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
@@ -11,7 +10,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
  */
 public class MessageParticle implements IMessage
 {
-    private BlockPos pos;
+    private double x;
+    private double y;
+    private double z;
     private EnumParticleTypes particle;
     
     public MessageParticle()
@@ -19,15 +20,27 @@ public class MessageParticle implements IMessage
         
     }
     
-    public MessageParticle(BlockPos pos, EnumParticleTypes particle)
+    public MessageParticle(double x, double y, double z, EnumParticleTypes particle)
     {
-        this.pos = pos;
+        this.x = x;
+        this.y = y;
+        this.z = z;
         this.particle = particle;
     }
     
-    public BlockPos getPos()
+    public double getX()
     {
-        return pos;
+        return x;
+    }
+    
+    public double getY()
+    {
+        return y;
+    }
+    
+    public double getZ()
+    {
+        return z;
     }
     
     public EnumParticleTypes getParticle()
@@ -38,16 +51,18 @@ public class MessageParticle implements IMessage
     @Override
     public void fromBytes(ByteBuf buf)
     {
-        pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+        x = buf.readDouble();
+        y = buf.readDouble();
+        z = buf.readDouble();
         particle = EnumParticleTypes.getParticleFromId(buf.readInt());
     }
 
     @Override
     public void toBytes(ByteBuf buf)
     {
-        buf.writeInt(pos.getX());
-        buf.writeInt(pos.getY());
-        buf.writeInt(pos.getZ());
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
         buf.writeInt(particle.getParticleID());
     }
     

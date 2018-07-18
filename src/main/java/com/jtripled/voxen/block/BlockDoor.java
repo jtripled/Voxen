@@ -2,6 +2,7 @@ package com.jtripled.voxen.block;
 
 import com.jtripled.voxen.item.IItemBase;
 import com.jtripled.voxen.item.ItemDoor;
+import com.jtripled.voxen.mod.ModBase;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBase
 {
+    private ModBase owner;
     private final String name;
     private boolean registered;
     private IItemBase item;
@@ -44,6 +46,7 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     public BlockDoor(String name, Material material)
     {
         super(material);
+        this.owner = null;
         this.registered = false;
         this.name = name;
         this.harvestable = true;
@@ -63,15 +66,22 @@ public class BlockDoor extends net.minecraft.block.BlockDoor implements IBlockBa
     }
 
     @Override
-    public final void setRegistered()
+    public final void setRegistered(ModBase owner)
     {
         this.registered = true;
+        this.owner = owner;
     }
     
     @Override
     public final String getName()
     {
         return name;
+    }
+    
+    @Override
+    public final ModBase getOwner()
+    {
+        return owner;
     }
     
     /*

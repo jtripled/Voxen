@@ -1,6 +1,7 @@
 package com.jtripled.voxen.block;
 
 import com.jtripled.voxen.item.IItemBase;
+import com.jtripled.voxen.mod.ModBase;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.crafting.IRecipe;
@@ -12,11 +13,13 @@ import net.minecraft.tileentity.TileEntity;
  */
 public interface IBlockBase
 {
+    public ModBase getOwner();
+    
     public String getName();
     
     public boolean isRegistered();
     
-    public void setRegistered();
+    public void setRegistered(ModBase owner);
 
     public IItemBase getItem();
     

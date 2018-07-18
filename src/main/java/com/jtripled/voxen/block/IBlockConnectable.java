@@ -19,7 +19,7 @@ public interface IBlockConnectable extends IBlockBase
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
     
-    public abstract boolean canConnect(IBlockState state, IBlockAccess world, IBlockState otherState, EnumFacing face);
+    public abstract boolean canConnect(BlockPos pos, IBlockState state, IBlockAccess world, BlockPos otherPos, IBlockState otherState, EnumFacing face);
     
     public PropertyBool[] getConnectableProperties();
     
@@ -46,7 +46,7 @@ public interface IBlockConnectable extends IBlockBase
         @Override
         public default IBlockState getConnectableActualState(IBlockState state, IBlockAccess world, BlockPos pos)
         {
-            return state.withProperty(NORTH, this.canConnect(state, world, world.getBlockState(pos.north()), EnumFacing.NORTH)).withProperty(EAST, this.canConnect(state, world, world.getBlockState(pos.east()), EnumFacing.EAST)).withProperty(SOUTH, this.canConnect(state, world, world.getBlockState(pos.south()), EnumFacing.SOUTH)).withProperty(WEST, this.canConnect(state, world, world.getBlockState(pos.west()), EnumFacing.WEST)).withProperty(UP, this.canConnect(state, world, world.getBlockState(pos.up()), EnumFacing.UP)).withProperty(DOWN, this.canConnect(state, world, world.getBlockState(pos.down()), EnumFacing.DOWN));
+            return state.withProperty(NORTH, this.canConnect(pos, state, world, pos.north(), world.getBlockState(pos.north()), EnumFacing.NORTH)).withProperty(EAST, this.canConnect(pos, state, world, pos.east(), world.getBlockState(pos.east()), EnumFacing.EAST)).withProperty(SOUTH, this.canConnect(pos, state, world, pos.south(), world.getBlockState(pos.south()), EnumFacing.SOUTH)).withProperty(WEST, this.canConnect(pos, state, world, pos.west(), world.getBlockState(pos.west()), EnumFacing.WEST)).withProperty(UP, this.canConnect(pos, state, world, pos.up(), world.getBlockState(pos.up()), EnumFacing.UP)).withProperty(DOWN, this.canConnect(pos, state, world, pos.down(), world.getBlockState(pos.down()), EnumFacing.DOWN));
         }
 
         public default boolean isConnectedDown(IBlockState state)
@@ -99,7 +99,7 @@ public interface IBlockConnectable extends IBlockBase
         @Override
         public default IBlockState getConnectableActualState(IBlockState state, IBlockAccess world, BlockPos pos)
         {
-            return state.withProperty(NORTH, this.canConnect(state, world, world.getBlockState(pos.north()), EnumFacing.NORTH)).withProperty(EAST, this.canConnect(state, world, world.getBlockState(pos.east()), EnumFacing.EAST)).withProperty(SOUTH, this.canConnect(state, world, world.getBlockState(pos.south()), EnumFacing.SOUTH)).withProperty(WEST, this.canConnect(state, world, world.getBlockState(pos.west()), EnumFacing.WEST));
+            return state.withProperty(NORTH, this.canConnect(pos, state, world, pos.north(), world.getBlockState(pos.north()), EnumFacing.NORTH)).withProperty(EAST, this.canConnect(pos, state, world, pos.east(), world.getBlockState(pos.east()), EnumFacing.EAST)).withProperty(SOUTH, this.canConnect(pos, state, world, pos.south(), world.getBlockState(pos.south()), EnumFacing.SOUTH)).withProperty(WEST, this.canConnect(pos, state, world, pos.west(), world.getBlockState(pos.west()), EnumFacing.WEST));
         }
     
         public default boolean isConnectedNorth(IBlockState state)
@@ -142,7 +142,7 @@ public interface IBlockConnectable extends IBlockBase
         @Override
         public default IBlockState getConnectableActualState(IBlockState state, IBlockAccess world, BlockPos pos)
         {
-            return state.withProperty(UP, this.canConnect(state, world, world.getBlockState(pos.up()), EnumFacing.UP)).withProperty(DOWN, this.canConnect(state, world, world.getBlockState(pos.down()), EnumFacing.DOWN));
+            return state.withProperty(UP, this.canConnect(pos, state, world, pos.up(), world.getBlockState(pos.up()), EnumFacing.UP)).withProperty(DOWN, this.canConnect(pos, state, world, pos.down(), world.getBlockState(pos.down()), EnumFacing.DOWN));
         }
 
         public default boolean isConnectedDown(IBlockState state)
